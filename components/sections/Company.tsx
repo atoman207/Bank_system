@@ -27,7 +27,7 @@ export function Company() {
       </div>
 
       <div className="mx-auto max-w-[880px] px-4 md:px-6 lg:px-0">
-        <div className="rounded-[12px] bg-white px-6 py-9 shadow-[0_4px_20px_rgba(0,0,0,0.08),0_12px_40px_rgba(0,0,0,0.06),0_2px_8px_rgba(0,0,0,0.04)] md:px-10 md:py-10 lg:px-12 lg:py-12">
+        <div className="bg-white px-6 py-9 shadow-[0_4px_20px_rgba(0,0,0,0.08),0_12px_40px_rgba(0,0,0,0.06),0_2px_8px_rgba(0,0,0,0.04)] md:px-10 md:py-10 lg:px-12 lg:py-12">
           <dl className="m-0 space-y-0">
             {companyRows.map((row, i) => (
               <div

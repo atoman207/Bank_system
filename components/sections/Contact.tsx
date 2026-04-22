@@ -1,6 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+
+const TEL_HREF = "tel:0762816055";
+const lineHref =
+  process.env.NEXT_PUBLIC_LINE_URL?.trim() || "https://lin.ee/WEJ3NAF";
+const lineLinkIsExternal = /^https?:\/\//i.test(lineHref);
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -16,10 +22,31 @@ function PhoneIcon({ className }: { className?: string }) {
   );
 }
 
+function LineBadge({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M12 2C6.48 2 2 5.58 2 9.99c0 3.95 3.56 7.25 8.36 7.89.33.07.77.21.88.49.1.25.06.64.03.89l-.14.85c-.04.25-.2.98.86.54 1.06-.45 5.74-3.38 7.83-5.79 1.44-1.58 2.18-3.19 2.18-4.87C22 5.58 17.52 2 12 2z" />
+    </svg>
+  );
+}
+
 function RequiredBadge() {
   return (
     <span className="ml-2 inline-block align-middle rounded bg-im-accent px-2 py-0.5 text-[11px] font-bold tracking-wider text-white md:text-xs">
       必須
+    </span>
+  );
+}
+
+function OptionalBadge() {
+  return (
+    <span className="ml-2 inline-block align-middle rounded bg-neutral-200 px-2 py-0.5 text-[11px] font-bold tracking-wider text-neutral-700 md:text-xs">
+      任意
     </span>
   );
 }
@@ -91,14 +118,25 @@ const privacyParagraphs = [
 ] as const;
 
 const inputClass =
-  "box-border w-full rounded border border-neutral-300 bg-white px-3 py-2.5 text-base leading-snug text-im-primary outline-none transition-colors placeholder:text-neutral-400 focus:border-im-primary focus:ring-1 focus:ring-im-primary md:text-lg";
+  "box-border w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-base leading-snug text-im-primary outline-none transition-colors placeholder:text-neutral-400 focus:border-im-accent focus:ring-2 focus:ring-im-accent/30 md:text-base";
+
+const requestOptions = [
+  { value: "運搬・設置", emoji: "🚚", hint: "引越・移設・階段搬入" },
+  { value: "販売", emoji: "🛒", hint: "新規購入・機種相談" },
+  { value: "修理・開錠", emoji: "🔧", hint: "ダイヤル忘れ・故障" },
+  { value: "その他", emoji: "✉", hint: "下取・処分など" },
+] as const;
+
+const customerTypes = ["個人", "法人", "店舗・事業主"] as const;
 
 type SubmitStatus = "idle" | "sending" | "success" | "error";
 
 export function Contact() {
   const [name, setName] = useState("");
+  const [customerType, setCustomerType] = useState<string>("");
   const [email, setEmail] = useState("");
   const [tel, setTel] = useState("");
+  const [prefecture, setPrefecture] = useState("");
   const [request, setRequest] = useState("");
   const [detail, setDetail] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -121,10 +159,25 @@ export function Contact() {
     setErrorMessage("");
 
     try {
+      const detailWithMeta = [
+        customerType ? `【お客様区分】${customerType}` : "",
+        prefecture ? `【お住まい／設置先エリア】${prefecture}` : "",
+        detail,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, tel, request, detail, agreed }),
+        body: JSON.stringify({
+          name,
+          email,
+          tel,
+          request,
+          detail: detailWithMeta,
+          agreed,
+        }),
       });
 
       const data = (await res.json().catch(() => ({}))) as {
@@ -140,8 +193,10 @@ export function Contact() {
 
       setStatus("success");
       setName("");
+      setCustomerType("");
       setEmail("");
       setTel("");
+      setPrefecture("");
       setRequest("");
       setDetail("");
       setAgreed(false);
@@ -158,205 +213,317 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="bg-white pb-16 pt-14 md:pb-20 md:pt-16 lg:pb-24 lg:pt-20"
+      className="relative bg-gradient-to-b from-im-secondary/50 via-white to-white py-14 md:py-20 lg:py-24"
       aria-labelledby="contact-heading"
     >
-      <h2 id="contact-heading" className="sr-only">
-        お問い合わせ
-      </h2>
-
-      <div className="mx-auto max-w-[1100px] px-4 pb-8 text-center md:px-6 md:pb-10 lg:px-0">
-        <p className="m-0 text-sm font-semibold uppercase tracking-[0.28em] text-im-accent md:text-base">
-          CONTACT
-        </p>
-        <h2 className="m-0 mt-2 text-[28px] font-semibold leading-tight tracking-tight text-im-primary md:mt-3 md:text-[34px] lg:mt-4 lg:text-[40px]">
-          お問い合わせ
-        </h2>
-      </div>
-
-      <div className="mx-auto max-w-[1100px] px-4 pb-10 text-center md:px-6 lg:px-0">
-        <p className="m-0 text-base font-normal text-neutral-500 md:text-lg">
-          \ お急ぎの方はお電話ください /
-        </p>
-        <div className="mx-auto mt-6 flex max-w-3xl flex-col items-center justify-center gap-4 md:mt-8 md:flex-row md:flex-nowrap md:items-center md:gap-8 lg:gap-10">
-          <a
-            href="tel:0762816055"
-            className="inline-flex items-center gap-3 text-im-accent no-underline transition-opacity hover:opacity-90 md:gap-4"
+      <div className="mx-auto max-w-[1100px] px-4 md:px-6 lg:px-0">
+        <div className="text-center">
+          <p className="m-0 text-sm font-semibold uppercase tracking-[0.28em] text-im-accent md:text-base">
+            CONTACT
+          </p>
+          <h2
+            id="contact-heading"
+            className="m-0 mt-2 text-[26px] font-bold leading-tight tracking-tight text-im-primary md:mt-3 md:text-[32px] lg:mt-4 lg:text-[40px]"
           >
-            <PhoneIcon className="h-10 w-10 shrink-0 md:h-12 md:w-12" />
-            <span className="text-[2rem] font-bold leading-none tracking-tight md:text-[2.75rem] lg:text-[3rem]">
-              076-281-6055
-            </span>
-          </a>
-          <p className="m-0 text-center text-sm font-normal leading-snug text-neutral-500 md:text-left md:text-base">
-            営業時間　8：00～18：00
-            <span className="yasumi">（不定休）</span>
+            無料見積り・お問い合わせ
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-neutral-700 md:text-base">
+            見積り・下見は完全無料。ご相談だけでもお気軽にどうぞ。
           </p>
         </div>
-      </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto mt-2 w-full max-w-[42rem] px-4 pb-16 md:mt-4 md:px-6 lg:max-w-[44rem] lg:px-0"
-      >
-        <div className="space-y-8">
-          <div>
-            <label
-              htmlFor="contact-name"
-              className="mb-2 block text-base font-bold text-im-primary md:text-lg"
-            >
-              お名前
-              <RequiredBadge />
-            </label>
-            <input
-              id="contact-name"
-              required
-              name="your-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="例：山田　太郎"
-              className={inputClass}
-              autoComplete="name"
-            />
+        <div className="mt-10 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-3">
+          <a
+            href={TEL_HREF}
+            className="flex flex-col items-center justify-center gap-2 border-2 border-[#0d7f82] bg-white p-6 text-center shadow-sm transition-transform hover:-translate-y-1"
+          >
+            <PhoneIcon className="h-8 w-8 text-[#0d7f82]" />
+            <p className="m-0 text-xs font-semibold text-[#0d7f82] md:text-sm">
+              お急ぎの方はお電話
+            </p>
+            <p className="m-0 text-2xl font-bold tracking-tight text-[#0d7f82] tabular-nums md:text-[26px]">
+              076-281-6055
+            </p>
+            <p className="m-0 text-[11px] text-neutral-500 md:text-xs">
+              8:00〜18:00（不定休）
+            </p>
+          </a>
+
+          <Link
+            href={lineHref}
+            {...(lineLinkIsExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
+            className="flex flex-col items-center justify-center gap-2 bg-[#06c755] p-6 text-center text-white shadow-sm transition-transform hover:-translate-y-1 hover:bg-[#05a948]"
+          >
+            <LineBadge className="h-8 w-8" />
+            <p className="m-0 text-xs font-semibold md:text-sm">
+              写真を送るだけでOK
+            </p>
+            <p className="m-0 text-xl font-bold md:text-2xl">LINE相談</p>
+            <p className="m-0 text-[11px] opacity-90 md:text-xs">
+              24時間メッセージ受付
+            </p>
+          </Link>
+
+          <div className="flex flex-col items-center justify-center gap-2 border-2 border-im-accent bg-im-accent p-6 text-center text-white shadow-sm">
+            <span className="text-2xl">📝</span>
+            <p className="m-0 text-xs font-semibold md:text-sm">じっくり相談</p>
+            <p className="m-0 text-xl font-bold md:text-2xl">メールフォーム</p>
+            <p className="m-0 text-[11px] opacity-90 md:text-xs">
+              下の入力フォームから
+            </p>
+          </div>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto mt-12 w-full max-w-[46rem] border border-neutral-200 bg-white p-6 shadow-sm md:mt-14 md:p-10 lg:p-12"
+        >
+          <div className="flex items-center gap-3 border-b border-neutral-100 pb-4">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-im-accent text-sm font-bold text-white">
+              ✓
+            </span>
+            <p className="m-0 text-sm font-semibold text-im-primary md:text-base">
+              入力はかんたん1分。24時間以内にご返信いたします。
+            </p>
           </div>
 
-          <div>
-            <label
-              htmlFor="contact-email"
-              className="mb-2 block text-base font-bold text-im-primary md:text-lg"
-            >
-              メールアドレス
-              <RequiredBadge />
-            </label>
-            <input
-              id="contact-email"
-              required
-              type="email"
-              name="your-email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="例：abcd@example.jp"
-              className={inputClass}
-              autoComplete="email"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="contact-tel"
-              className="mb-2 block text-base font-bold text-im-primary md:text-lg"
-            >
-              お電話番号
-            </label>
-            <input
-              id="contact-tel"
-              type="tel"
-              name="your-tel"
-              value={tel}
-              onChange={(e) => setTel(e.target.value)}
-              placeholder="例：09012345678"
-              className={inputClass}
-              autoComplete="tel"
-            />
-          </div>
-
-          <fieldset className="m-0 min-w-0 border-0 p-0">
-            <legend className="mb-2 w-full text-base font-bold text-im-primary md:text-lg">
-              <span className="inline-flex flex-wrap items-center gap-x-0">
-                依頼内容
+          <div className="mt-8 space-y-7">
+            <div>
+              <label
+                htmlFor="contact-name"
+                className="mb-2 block text-base font-bold text-im-primary md:text-lg"
+              >
+                お名前
                 <RequiredBadge />
-              </span>
-            </legend>
-            <div className="flex flex-col gap-2.5 pt-1">
-              {(
-                ["運搬", "修理", "販売", "その他（※詳細記入必須）"] as const
-              ).map((v) => (
+              </label>
+              <input
+                id="contact-name"
+                required
+                name="your-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例：山田　太郎"
+                className={inputClass}
+                autoComplete="name"
+              />
+            </div>
+
+            <fieldset className="m-0 min-w-0 border-0 p-0">
+              <legend className="mb-2 w-full text-base font-bold text-im-primary md:text-lg">
+                お客様区分
+                <OptionalBadge />
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {customerTypes.map((t) => (
+                  <label
+                    key={t}
+                    className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-semibold transition-colors md:text-base ${
+                      customerType === t
+                        ? "border-im-accent bg-im-accent text-white"
+                        : "border-neutral-300 bg-white text-neutral-700 hover:border-im-accent"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="customer-type"
+                      value={t}
+                      checked={customerType === t}
+                      onChange={() => setCustomerType(t)}
+                      className="sr-only"
+                    />
+                    {t}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="grid grid-cols-1 gap-7 md:grid-cols-2 md:gap-6">
+              <div>
                 <label
-                  key={v}
-                  className="flex cursor-pointer items-center gap-2.5 text-base text-im-primary md:text-lg"
+                  htmlFor="contact-email"
+                  className="mb-2 block text-base font-bold text-im-primary md:text-lg"
                 >
-                  <input
-                    type="radio"
-                    name="request"
-                    value={v}
-                    checked={request === v}
-                    onChange={() => setRequest(v)}
-                    className="h-4 w-4 shrink-0 accent-im-accent"
-                  />
-                  <span>{v}</span>
+                  メールアドレス
+                  <RequiredBadge />
                 </label>
+                <input
+                  id="contact-email"
+                  required
+                  type="email"
+                  name="your-email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="例：abcd@example.jp"
+                  className={inputClass}
+                  autoComplete="email"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-tel"
+                  className="mb-2 block text-base font-bold text-im-primary md:text-lg"
+                >
+                  お電話番号
+                  <OptionalBadge />
+                </label>
+                <input
+                  id="contact-tel"
+                  type="tel"
+                  name="your-tel"
+                  value={tel}
+                  onChange={(e) => setTel(e.target.value)}
+                  placeholder="例：09012345678"
+                  className={inputClass}
+                  autoComplete="tel"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="contact-pref"
+                className="mb-2 block text-base font-bold text-im-primary md:text-lg"
+              >
+                設置先／搬入先の都道府県
+                <OptionalBadge />
+              </label>
+              <input
+                id="contact-pref"
+                name="your-pref"
+                value={prefecture}
+                onChange={(e) => setPrefecture(e.target.value)}
+                placeholder="例：東京都渋谷区"
+                className={inputClass}
+                autoComplete="address-level1"
+              />
+            </div>
+
+            <fieldset className="m-0 min-w-0 border-0 p-0">
+              <legend className="mb-3 w-full text-base font-bold text-im-primary md:text-lg">
+                <span className="inline-flex flex-wrap items-center gap-x-0">
+                  ご依頼内容
+                  <RequiredBadge />
+                </span>
+              </legend>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {requestOptions.map((v) => {
+                  const checked = request === v.value;
+                  return (
+                    <label
+                      key={v.value}
+                      className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors md:p-4 ${
+                        checked
+                          ? "border-im-accent bg-im-accent/5"
+                          : "border-neutral-300 bg-white hover:border-im-accent/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="request"
+                        value={v.value}
+                        checked={checked}
+                        onChange={() => setRequest(v.value)}
+                        className="h-4 w-4 shrink-0 accent-im-accent"
+                      />
+                      <span className="text-xl md:text-2xl">{v.emoji}</span>
+                      <span className="flex flex-col">
+                        <span className="text-sm font-bold text-im-primary md:text-base">
+                          {v.value}
+                        </span>
+                        <span className="text-[11px] text-neutral-500 md:text-xs">
+                          {v.hint}
+                        </span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            <div>
+              <label
+                htmlFor="contact-detail"
+                className="mb-2 block text-base font-bold text-im-primary md:text-lg"
+              >
+                詳細（設置場所・金庫のサイズ／型番・ご希望日程など）
+                <OptionalBadge />
+              </label>
+              <textarea
+                id="contact-detail"
+                name="your-message"
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+                rows={8}
+                maxLength={2000}
+                placeholder="例：マンション3階まで業務用金庫（約300kg）の搬入をお願いしたいです。階段搬入予定。希望日は5月中旬。"
+                className={`${inputClass} min-h-[10rem] resize-y`}
+              />
+              <p className="mt-1 text-right text-xs text-neutral-500">
+                {detail.length} / 2000
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 max-h-40 overflow-y-auto rounded-lg border border-neutral-300 bg-neutral-50/80 p-4 md:max-h-44 md:p-5">
+            <p className="mb-2 text-sm font-bold text-im-primary md:text-base">
+              プライバシーポリシー
+            </p>
+            <div className="privacy-policy text-xs leading-relaxed text-neutral-700 md:text-sm">
+              {privacyParagraphs.map((p, i) => (
+                <p key={i} className="mb-3 last:mb-0">
+                  {p}
+                </p>
               ))}
             </div>
-          </fieldset>
+          </div>
 
-          <div>
-            <label
-              htmlFor="contact-detail"
-              className="mb-2 block text-base font-bold text-im-primary md:text-lg"
-            >
-              詳細（設置場所・金庫の種類など）
+          <p className="mt-6 text-center md:mt-7">
+            <label className="inline-flex cursor-pointer items-start gap-3 text-left text-sm text-im-primary md:text-base">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 accent-im-accent"
+              />
+              <span>プライバシーポリシーに同意のうえ送信します</span>
             </label>
-            <textarea
-              id="contact-detail"
-              name="your-message"
-              value={detail}
-              onChange={(e) => setDetail(e.target.value)}
-              rows={10}
-              maxLength={2000}
-              className={`${inputClass} min-h-[12.5rem] resize-y`}
-            />
-          </div>
-        </div>
-
-        <div className="mt-10 max-h-40 overflow-y-auto rounded-lg border border-neutral-300 bg-neutral-50/80 p-4 md:max-h-44 md:p-5">
-          <div className="privacy-policy text-sm leading-relaxed text-neutral-700 md:text-base">
-            {privacyParagraphs.map((p, i) => (
-              <p key={i} className="mb-3 last:mb-0">
-                {p}
-              </p>
-            ))}
-          </div>
-        </div>
-
-        <p className="mt-6 text-center md:mt-8">
-          <label className="inline-flex cursor-pointer items-start gap-3 text-left text-base text-im-primary md:text-lg">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-1 h-4 w-4 shrink-0 accent-im-accent"
-            />
-            <span>プライバシーポリシーに同意のうえ送信します</span>
-          </label>
-        </p>
-
-        {status === "success" && (
-          <p
-            role="status"
-            className="mt-8 rounded border border-emerald-300 bg-emerald-50 px-4 py-3 text-center text-base font-semibold text-emerald-700"
-          >
-            お問い合わせを受け付けました。担当者よりご連絡いたします。
           </p>
-        )}
-        {status === "error" && errorMessage && (
-          <p
-            role="alert"
-            className="mt-8 rounded border border-red-300 bg-red-50 px-4 py-3 text-center text-base font-semibold text-red-700"
-          >
-            {errorMessage}
-          </p>
-        )}
 
-        <div className="mt-10 flex justify-center md:mt-12">
-          <button
-            type="submit"
-            disabled={status === "sending"}
-            className="w-full max-w-md rounded-[38px] border-0 bg-im-accent px-8 py-3.5 text-lg font-bold tracking-wide text-white transition-colors duration-300 hover:bg-white hover:text-im-primary hover:ring-2 hover:ring-im-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-im-accent disabled:hover:text-white disabled:hover:ring-0 md:text-xl"
-          >
-            {status === "sending" ? "送信中..." : "この内容で送信する"}
-          </button>
-        </div>
-      </form>
+          {status === "success" && (
+            <p
+              role="status"
+              className="mt-6 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-center text-sm font-semibold text-emerald-700 md:text-base"
+            >
+              ✓ お問い合わせを受け付けました。担当者よりご連絡いたします。
+            </p>
+          )}
+          {status === "error" && errorMessage && (
+            <p
+              role="alert"
+              className="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700 md:text-base"
+            >
+              {errorMessage}
+            </p>
+          )}
+
+          <div className="mt-8 flex justify-center md:mt-10">
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="w-full max-w-md rounded-full border-0 bg-im-accent px-8 py-4 text-base font-bold tracking-wide text-white shadow-lg shadow-im-accent/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#c94a15] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:bg-im-accent md:text-lg"
+            >
+              {status === "sending"
+                ? "送信中..."
+                : "▶ この内容で無料見積りを依頼する"}
+            </button>
+          </div>
+          <p className="mt-3 text-center text-xs text-neutral-500 md:text-sm">
+            ※24時間以内に担当者よりご返信いたします。返信がない場合は迷惑メールフォルダをご確認ください。
+          </p>
+        </form>
+      </div>
     </section>
   );
 }
