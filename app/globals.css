@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* Design tokens aligned with Elementor kit-6 + page post-9 */
+@theme {
+  --color-im-primary: #0c2541;
+  --color-im-secondary: #e7e9ed;
+  --color-im-text: #7a7a7a;
+  --color-im-accent: #e4571b;
+  --color-im-border: #d1d5db;
+  --font-sans: var(--font-noto-sans-jp), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Hero heading size modifiers (from Elementor custom CSS) */
+.small-no {
+  font-size: 0.7em;
+}
+.small-text {
+  font-size: 0.88em;
+  letter-spacing: -0.05em;
+}
+.small-omakase {
+  font-size: 0.7em;
+  letter-spacing: -0.05em;
+}
+
+.company-name {
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.1;
+}
+.company-name .jp-name {
+  font-size: 12px;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 0;
+}
+.company-name .en-name {
+  font-size: 20px;
+  display: inline-block;
+  width: 100%;
+}
+
+.company-name-sp {
+  color: #0c2541;
+  line-height: 0.9;
+}
+.company-name-sp .jp-name-sp {
+  font-size: 10px;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 0;
+}
+.company-name-sp .en-name-sp {
+  font-size: 16px;
+  display: inline-block;
+  width: 100%;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .company-name-sp .en-name-sp {
+    font-size: 20px;
+  }
+  .company-name-sp .jp-name-sp {
+    font-size: 12px;
+  }
+}
+
+.question {
+  text-indent: -1.6em;
+  padding-left: 1.6em;
+}
+.answer {
+  text-indent: -1.6em;
+  padding-left: 1.6em;
+}
+
+.yasumi {
+  font-size: 0.7em;
+}
+
+.label-wide {
+  display: inline-block;
+  margin-bottom: 1.4em;
+}
+
+.must {
+  color: #fff;
+  border-radius: 3px;
+  font-size: 18px;
+  margin-left: 10px;
+  padding: 2px 8px;
+  letter-spacing: 2px;
+  background: #e4571b;
+}
+
+@media (max-width: 768px) {
+  .must {
+    font-size: 14px;
+  }
+}
