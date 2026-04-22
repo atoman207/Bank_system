@@ -12,7 +12,7 @@ const notoSansJp = Noto_Sans_JP({
 const SITE_NAME =
   "株式会社IM｜金庫・耐火庫の運搬・設置・販売・修理【アイエムサービス】";
 const SITE_DESCRIPTION =
-  "【全国対応・創業30年】金庫・耐火庫の運搬／設置／販売／修理はアイエムサービスへ。法人・個人問わず安全・迅速に対応。累計搬入実績3,500件超。下見・見積り無料。石川県白山市より出張対応。";
+  "【全国対応・創業33年】金庫・耐火庫の運搬／設置／販売／修理はアイエムサービスへ。法人・個人問わず安全・迅速に対応。累計搬入実績15,000件超。下見・見積り無料。石川県白山市より出張対応。";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://i-m-service.com"),

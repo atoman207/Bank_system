@@ -139,7 +139,7 @@ export function Hero() {
               全国対応
             </span>
             <span className="rounded-full bg-white/15 px-3 py-1 ring-1 ring-inset ring-white/40 backdrop-blur">
-              創業30年
+              創業33年
             </span>
             <span className="rounded-full bg-white/15 px-3 py-1 ring-1 ring-inset ring-white/40 backdrop-blur">
               法人対応
@@ -164,7 +164,7 @@ export function Hero() {
 
           <ul className="mt-6 grid gap-2 text-sm font-semibold text-white sm:grid-cols-2 sm:text-base">
             {[
-              "創業30年・累計3,500件超の実績",
+              "創業33年・累計15,000件超の実績",
               "2階以上・階段搬入もプロが対応",
               "全メーカー取扱／開錠・修理OK",
               "最短当日お見積り／下見無料",

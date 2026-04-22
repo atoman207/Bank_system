@@ -1,7 +1,6 @@
 type Region = {
   name: string;
   pref: readonly string[];
-  featured?: boolean;
 };
 
 const regions: readonly Region[] = [
@@ -22,9 +21,8 @@ const regions: readonly Region[] = [
     ],
   },
   {
-    name: "北陸・甲信越（出張拠点エリア）",
+    name: "北陸・甲信越",
     pref: ["石川県", "富山県", "福井県", "新潟県", "長野県", "山梨県"],
-    featured: true,
   },
   {
     name: "東海",
@@ -82,7 +80,7 @@ export function Areas() {
             対応エリア（全国対応）
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
-            石川県・白山市の本社を拠点に、金庫の運搬・設置・修理を全国へ出張対応しております。
+            金庫の運搬・設置・修理について、北海道から沖縄まで全国へ出張対応しております。
           </p>
         </div>
 
@@ -90,18 +88,9 @@ export function Areas() {
           {regions.map((r) => (
             <article
               key={r.name}
-              className={`border p-5 md:p-6 ${
-                r.featured
-                  ? "border-im-accent bg-im-accent/5 shadow-sm"
-                  : "border-neutral-200 bg-white"
-              }`}
+              className="border border-neutral-200 bg-white p-5 md:p-6"
             >
               <h3 className="m-0 flex items-center gap-2 text-base font-bold text-im-primary md:text-lg">
-                {r.featured && (
-                  <span className="rounded bg-im-accent px-2 py-0.5 text-[10px] font-bold text-white md:text-xs">
-                    拠点
-                  </span>
-                )}
                 {r.name}
               </h3>
               <ul className="mt-3 flex flex-wrap gap-1.5 md:gap-2">

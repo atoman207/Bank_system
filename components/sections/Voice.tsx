@@ -121,7 +121,7 @@ export function Voice() {
             お客様の声
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-neutral-700 md:text-base">
-            累計3,500件を超えるお客様からのご評価をいただいています。
+            累計15,000件を超えるお客様からのご評価をいただいています。
           </p>
         </div>
         <div className="mt-10 grid grid-cols-1 gap-5 md:mt-12 md:grid-cols-2 md:gap-6 lg:gap-7">

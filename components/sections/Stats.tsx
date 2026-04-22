@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react";
 
 const stats = [
   {
-    value: 3500,
+    value: 15000,
     unit: "件+",
     label: "累計搬入実績",
     sub: "法人・個人問わず対応",
-    step: 100,
+    step: 300,
   },
   {
-    value: 30,
+    value: 33,
     unit: "年",
     label: "創業からの実績",
     sub: "金庫ひと筋のノウハウ",

@@ -40,7 +40,7 @@ export function Message() {
           <div className="flex min-w-0 flex-1 flex-col justify-center text-left">
             <blockquote className="m-0 border-l-4 border-im-accent pl-5 text-base font-normal leading-[1.85] text-[#292929] md:pl-6 md:text-lg md:leading-[1.9] lg:text-[20px] lg:leading-[2]">
               <p className="m-0">
-                金庫メーカーで10年間さまざまな知識を学び、独立して創業30年。
+                金庫メーカーで10年間さまざまな知識を学び、独立して創業33年。
               </p>
               <p className="m-0 mt-4">
                 「金庫を安全に、確実に、お客様の想いごとお運びする」
