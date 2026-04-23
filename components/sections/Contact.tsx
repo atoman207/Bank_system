@@ -113,7 +113,7 @@ const privacyParagraphs = [
     <br />
     【電話番号】076-281-6055
     <br />
-    【Eメールアドレス】im.service130@fancy.ocn.ne.jp
+    【Eメールアドレス】info@imservice.xsrv.jp
   </>,
 ] as const;
 

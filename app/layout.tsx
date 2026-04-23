@@ -96,7 +96,7 @@ const localBusinessJsonLd = {
   logo: "https://i-m-service.com/images/logo.png",
   image: "https://i-m-service.com/images/hero-desktop.jpg",
   telephone: "+81-76-281-6055",
-  email: "im.service130@fancy.ocn.ne.jp",
+  email: "info@imservice.xsrv.jp",
   priceRange: "¥¥",
   address: {
     "@type": "PostalAddress",

@@ -2,7 +2,7 @@ const companyRows = [
   { label: "会社名", value: "株式会社IM" },
   { label: "所在地", value: "〒924-0017 石川県白山市宮永町53" },
   { label: "電話番号", value: "076-281-6055" },
-  { label: "メールアドレス", value: "im.service130@fancy.ocn.ne.jp" },
+  { label: "メールアドレス", value: "info@imservice.xsrv.jp" },
   { label: "営業時間", value: "8：00～18：00（不定休）" },
   { label: "対応エリア", value: "全国対応" },
 ] as const;
