@@ -138,6 +138,9 @@ export function Hero() {
             <span className="rounded-full bg-im-accent px-3 py-1 shadow-md">
               全国対応
             </span>
+            <span className="rounded-full bg-green-600 px-3 py-1 shadow-md">
+              全国最安値‼︎
+            </span>
             <span className="rounded-full bg-white/15 px-3 py-1 ring-1 ring-inset ring-white/40 backdrop-blur">
               創業33年
             </span>
